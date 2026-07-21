@@ -19,4 +19,27 @@ describe('AppController', () => {
       expect(appController.getHello()).toBe('Hello World!');
     });
   });
+
+  describe('me', () => {
+    it('should return "/me : Successful endpoint!"', () => {
+      expect(appController.getCurrentUser()).toBe('/me : Successful endpoint!');
+    });
+  });
+  describe('me/connections', () => {
+    it('should return "/me/connections : Successful endpoint!"', () => {
+      expect(appController.getCurrentUsersConnections).toBe('/me/connections : Successful endpoint!');
+    });
+  });
+
+  describe('users', () => {
+    it('should return "/users : Successful endpoint!"', () => {
+      expect(appController.getAllUsers).toBe('/users : Successful endpoint!');
+    });
+  });
+
+  describe('users/:id', () => {
+    it('should return "/users/:id : Successful endpoint!" with :id being the parameter', (id: string) => {
+      expect(appController.getUser(id)).toBe('/me' + id + ' : Successful endpoint!');
+    });
+  });
 });

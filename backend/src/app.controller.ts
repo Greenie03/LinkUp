@@ -17,7 +17,6 @@ export class AppController {
   @Get("me")
   getCurrentUser(): User|undefined {
     const user = this.userService.getUserById('1');
-    console.log(user)
     return user;
   }
 

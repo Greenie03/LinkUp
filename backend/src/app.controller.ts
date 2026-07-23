@@ -1,9 +1,13 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { AppService } from './app.service';
+import { UserService } from './user/user.service';
+import { User } from './entity/user.entity';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService,
+              private readonly userService: UserService
+  ) {}
 
   @Get()
   getHello(): string {
@@ -11,8 +15,10 @@ export class AppController {
   }
 
   @Get("me")
-  getCurrentUser(): string {
-    return "/me : Successful endpoint!";
+  getCurrentUser(): User|undefined {
+    const user = this.userService.getUserById('1');
+    console.log(user)
+    return user;
   }
 
   @Get("me/connections")
@@ -21,8 +27,8 @@ export class AppController {
   }
   
   @Get("users")
-  getAllUsers(): string {
-    return "/users : Successful endpoint!";
+  getAllUsers(): User[] {
+    return this.userService.getAllUsers();
   }
   
   @Get("users/:id")

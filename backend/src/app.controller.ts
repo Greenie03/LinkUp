@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { User } from './entity/user.entity';
@@ -35,5 +35,11 @@ export class AppController {
   async getUser(@Param('id') id: string): Promise<User | undefined> {
     const user = await this.userService.getUserById(id)
     return user
+  }
+
+  @Get("search")
+  async search(@Query('q') q: string): Promise<User[]> {
+    const res = await this.userService.search(q)
+    return res
   }
 }

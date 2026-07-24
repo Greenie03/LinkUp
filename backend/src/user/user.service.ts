@@ -19,6 +19,14 @@ export class UserService {
         return undefined
     }
 
+    async search(q: string): Promise<User[]> {
+        const result = await this.neo4jService.read("MATCH (n:User) WHERE n.name =~ $q RETURN elementId(n) AS id, n.name, n.email LIMIT 25;", {"q": '(?i).*'+q+'.*'})
+        const users = result.records.map(record => {
+            return new User(record.get('id'), record.get('n.name'))
+        })
+        return users
+    }
+
     async getUserByName(name: string): Promise<User|undefined> {
         const result = await this.neo4jService.read("MATCH (n:User {name: $name}) RETURN elementId(n) AS id, n.name, n.email LIMIT 25;", {"name": name})
         if (result.records.length > 0){

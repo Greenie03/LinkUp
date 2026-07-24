@@ -15,8 +15,8 @@ export class AppController {
   }
 
   @Get("me")
-  getCurrentUser(): User|undefined {
-    const user = this.userService.getUserById('1');
+  async getCurrentUser(): Promise<User|undefined> {
+    const user = await this.userService.getUserById('4:28e371ef-4377-4f2b-a2b3-b059cc1e974b:0');
     return user;
   }
 
@@ -26,12 +26,14 @@ export class AppController {
   }
   
   @Get("users")
-  getAllUsers(): User[] {
-    return this.userService.getAllUsers();
+  async getAllUsers(): Promise<User[]> {
+    const users = await this.userService.getAllUsers();
+    return users
   }
   
   @Get("users/:id")
-  getUser(@Param('id') id: string): string {
-    return "/users/"+ id + " : Successful endpoint!";
+  async getUser(@Param('id') id: string): Promise<User | undefined> {
+    const user = await this.userService.getUserById(id)
+    return user
   }
 }

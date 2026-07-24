@@ -10,6 +10,7 @@ export class Neo4jService {
         @Inject(NEO4J_CONFIG) private readonly config,
         @Inject(NEO4J_DRIVER) private readonly driver
     ) {}
+
     getReadSession(database?: string): Session {
         return this.driver.session({
             database: database || this.config.database,

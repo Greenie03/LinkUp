@@ -13,10 +13,15 @@ export class UserService {
     async createUser(signInDto: SignInDto): Promise<any> {
         const hash = await bcrypt.hash(signInDto.password, 10)
         const result = await this.neo4jService.write(
-            "CREATE (n:User{name: $name, email: $email, hash: $hash});", 
+            "CREATE (n:User{name: $name, email: $email, hash: $hash}) RETURN elementId(n) AS id, n.name AS name, n.email AS email;", 
             {"name": signInDto.name, "email": signInDto.email,"hash": hash}
         )
-        console.log(result)
+        if (result.records.length > 0){
+            return result.records.map(record => {
+            return new User(record.get('id'), record.get('name'), record.get('email'))
+        })[0]
+        }
+        return null
     }
 
     async getUserById(id: string): Promise<User|undefined> {

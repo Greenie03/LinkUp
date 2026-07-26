@@ -10,16 +10,6 @@ export class AppController {
               private readonly userService: UserService
   ) {}
 
-  @Post("auth/signup")
-  async signUp(@Body() body: SignInDto): Promise<any> {
-    return this.userService.createUser(body)
-  }
-
-  /*@Post("auth/login")
-  async token(@Body() body: any): Promise<any> {
-    return body
-  }*/
-
   @Get("me")
   async getCurrentUser(): Promise<User|undefined> {
     const user = await this.userService.getUserById('4:28e371ef-4377-4f2b-a2b3-b059cc1e974b:0');

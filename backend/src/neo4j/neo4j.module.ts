@@ -1,9 +1,10 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { Module, DynamicModule, Global } from '@nestjs/common';
 import { Neo4jService } from './neo4j.service';
 import { createDriver } from './neo4j.utils'
 import { Neo4jConfig } from 'src/neo4j-config/neo4j-config.interface';
-import { NEO4J_CONFIG, NEO4J_DRIVER, NEO4J_OPTIONS } from './neo4j.constants';
+import { NEO4J_CONFIG, NEO4J_DRIVER } from './neo4j.constants';
 
+@Global()
 @Module({})
 export class Neo4jModule {
     static forRoot(config: Neo4jConfig): DynamicModule {
@@ -23,6 +24,8 @@ export class Neo4jModule {
             ],
             exports: [
               Neo4jService,
+              NEO4J_CONFIG,
+              NEO4J_DRIVER,
             ]
         }
     }

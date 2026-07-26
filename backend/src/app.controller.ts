@@ -1,7 +1,8 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { User } from './entity/user.entity';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Controller()
 export class AppController {
@@ -9,10 +10,15 @@ export class AppController {
               private readonly userService: UserService
   ) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post("auth/signup")
+  async signUp(@Body() body: SignInDto): Promise<any> {
+    return this.userService.createUser(body)
   }
+
+  /*@Post("auth/login")
+  async token(@Body() body: any): Promise<any> {
+    return body
+  }*/
 
   @Get("me")
   async getCurrentUser(): Promise<User|undefined> {
@@ -42,4 +48,5 @@ export class AppController {
     const res = await this.userService.search(q)
     return res
   }
+
 }

@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Post, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Param, Query, Request } from '@nestjs/common';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { User } from './entity/user.entity';
 import { SignInDto } from './dto/sign-in.dto';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AppController {
@@ -10,29 +12,34 @@ export class AppController {
               private readonly userService: UserService
   ) {}
 
+  @UseGuards(AuthGuard("jwt"))
   @Get("me")
-  async getCurrentUser(): Promise<User|undefined> {
-    const user = await this.userService.getUserById('4:28e371ef-4377-4f2b-a2b3-b059cc1e974b:0');
+  async getCurrentUser(@Request() req): Promise<User|undefined> {
+    const user = await this.userService.getUserById(req.user.userId);
     return user;
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Get("me/connections")
-  getCurrentUsersConnections(): string {
+  getCurrentUsersConnections(@Request() req): string {
     return "/me/connections : Successful endpoint!";
   }
   
+  @UseGuards(AuthGuard("jwt"))
   @Get("users")
   async getAllUsers(): Promise<User[]> {
     const users = await this.userService.getAllUsers();
     return users
   }
   
+  @UseGuards(AuthGuard("jwt"))
   @Get("users/:id")
   async getUser(@Param('id') id: string): Promise<User | undefined> {
     const user = await this.userService.getUserById(id)
     return user
   }
 
+  @UseGuards(AuthGuard("jwt"))
   @Get("search")
   async search(@Query('q') q: string): Promise<User[]> {
     const res = await this.userService.search(q)

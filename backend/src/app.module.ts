@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigService } from '@nestjs/config';
+import { RefreshTokenService } from './refresh-token/refresh-token.service';
 
 
 @Module({
@@ -33,6 +34,6 @@ import { ConfigService } from '@nestjs/config';
         signOptions: { expiresIn: "1h" },
       }),],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, RefreshTokenService],
 })
 export class AppModule {}

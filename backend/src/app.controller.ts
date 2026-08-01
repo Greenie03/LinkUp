@@ -14,7 +14,7 @@ export class AppController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("me")
-  async getCurrentUser(@Request() req): Promise<User|undefined> {
+  async getCurrentUser(@Request() req): Promise<User|null> {
     const user = await this.userService.getUserById(req.user.userId);
     return user;
   }
@@ -34,7 +34,7 @@ export class AppController {
   
   @UseGuards(AuthGuard("jwt"))
   @Get("users/:id")
-  async getUser(@Param('id') id: string): Promise<User | undefined> {
+  async getUser(@Param('id') id: string): Promise<User|null> {
     const user = await this.userService.getUserById(id)
     return user
   }

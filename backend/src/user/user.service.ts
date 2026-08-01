@@ -13,28 +13,37 @@ export class UserService {
     async createUser(signInDto: SignInDto): Promise<any> {
         const hash = await bcrypt.hash(signInDto.password, 10)
         const result = await this.neo4jService.write(
-            "CREATE (n:User{name: $name, email: $email, hash: $hash}) RETURN elementId(n) AS id, n.name AS name, n.email AS email;", 
+            "MERGE (n:User{name: $name, email: $email, hash: $hash}) RETURN elementId(n) AS id, n.name AS name, n.email AS email;", 
             {"name": signInDto.name, "email": signInDto.email,"hash": hash}
         )
-        if (result.records.length > 0){
-            return result.records.map(record => {
-            return new User(record.get('id'), record.get('name'), record.get('email'))
-        })[0]
+        const record = result.records[0];
+        if (!record) {
+            return null;
         }
-        return null
+
+        return new User(
+            record.get("id"),
+            record.get("name"),
+            record.get("email"),
+        );
     }
 
-    async getUserById(id: string): Promise<User|undefined> {
+    async getUserById(id: string): Promise<User|null> {
         const result = await this.neo4jService.read(
-            "MATCH (n:User) WHERE elementId(n)=$id RETURN elementId(n) AS id, n.name, n.email LIMIT 25;", 
+            "MATCH (n:User) WHERE elementId(n)=$id RETURN elementId(n) AS id, n.name AS name, n.email AS email LIMIT 25;", 
             {"id": id}
         )
-        if (result.records.length > 0){
-            return result.records.map(record => {
-            return new User(record.get('id'), record.get('n.name'), record.get('n.email'))
-        })[0]
+        const record = result.records[0];
+
+        if (!record) {
+            return null;
         }
-        return undefined
+
+        return new User(
+            record.get("id"),
+            record.get("name"),
+            record.get("email"),
+        );
     }
 
     async search(q: string): Promise<User[]> {
@@ -45,14 +54,19 @@ export class UserService {
         return users
     }
 
-    async getUserByName(name: string): Promise<User|undefined> {
-        const result = await this.neo4jService.read("MATCH (n:User {name: $name}) RETURN elementId(n) AS id, n.name, n.email LIMIT 25;", {"name": name})
-        if (result.records.length > 0){
-            return result.records.map(record => {
-            return new User(record.get('id'), record.get('n.name'), record.get('n.email'))
-        })[0]
+    async getUserByName(name: string): Promise<User|null> {
+        const result = await this.neo4jService.read("MATCH (n:User {name: $name}) RETURN elementId(n) AS id, n.name AS name, n.email AS email LIMIT 25;", {"name": name})
+        const record = result.records[0];
+
+        if (!record) {
+            return null;
         }
-        return undefined
+
+        return new User(
+            record.get("id"),
+            record.get("name"),
+            record.get("email"),
+        );
     }
 
     async getAllUsers(): Promise<User[]> {
@@ -64,16 +78,18 @@ export class UserService {
     }
 
     async findByEmail(email: string) {
-                const result = await this.neo4jService.read("MATCH (n:User {email: $email}) RETURN elementId(n) AS id, n.name AS name, n.email AS email, n.hash AS hash LIMIT 25;", {"email": email})
-        if (result.records.length > 0){
-            return result.records.map(record => {
-            return {
-                "infos": new User(record.get('id'), record.get('name'), record.get('email')),
-                "hash": record.get('hash')
-            }
-        })[0]
+        const result = await this.neo4jService.read("MATCH (n:User {email: $email}) RETURN elementId(n) AS id, n.name AS name, n.email AS email, n.hash AS hash LIMIT 25;", {"email": email})
+        const record = result.records[0]
+
+        if(!record){
+            return null
         }
-        return undefined
+
+        return {
+            "infos": new User(record.get('id'), record.get('name'), record.get('email')),
+            "hash": record.get('hash')
+        }
+
     }
 
     async validateCredentials(email: string, password: string) {
